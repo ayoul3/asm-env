@@ -1,25 +1,30 @@
 package asm
 
 import (
+	"os"
 	"regexp"
 	"strings"
 
+	"emperror.dev/errors"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/aws/aws-sdk-go/service/secretsmanager/secretsmanageriface"
-	"github.com/prometheus/common/log"
+	log "github.com/sirupsen/logrus"
 )
 
 const SMPatern = "arn:aws:secretsmanager:"
 
 // Client is a SM custom client
 type Client struct {
-	api secretsmanageriface.SecretsManagerAPI
+	api    secretsmanageriface.SecretsManagerAPI
+	region string
 }
 
 // NewClient returns a new Client from an AWS SM client
 func NewClient(api secretsmanageriface.SecretsManagerAPI) *Client {
+	region := os.Getenv("AWS_REGION")
 	return &Client{
 		api,
+		region,
 	}
 }
 
@@ -35,10 +40,16 @@ func NewAPIForRegion(region string) secretsmanageriface.SecretsManagerAPI {
 
 // GetSecret return a Secret fetched from SM
 func (c *Client) GetSecret(key string) (secret string, err error) {
-	formattedKey := c.ExtractPath(key)
-	res, err := c.api.GetSecretValue(new(secretsmanager.GetSecretValueInput).SetSecretId(formattedKey))
+	secretName := c.ExtractPath(key)
+	secretRegion := c.ExtractRegion(key)
+	api := c.api
+	if secretRegion != c.region {
+		log.Debugf("Switching regions to %s for key %s", secretRegion, key)
+		api = NewAPIForRegion(secretRegion)
+	}
+	res, err := api.GetSecretValue(new(secretsmanager.GetSecretValueInput).SetSecretId(secretName))
 	if err != nil {
-		return "", err
+		return "", errors.Wrapf(err, "GetSecretValue ")
 	}
 	return *res.SecretString, nil
 }
@@ -63,10 +74,10 @@ func (c *Client) ExtractPath(key string) (out string) {
 }
 
 func (c *Client) ExtractRegion(key string) (region string) {
-	var re = regexp.MustCompile(`(arn:aws:secretsmanager:([a-z0-9-]+):\d+:`)
+	var re = regexp.MustCompile(`arn:aws:secretsmanager:([a-z0-9-]+):\d+:`)
 	match := re.FindStringSubmatch(key)
 	if len(match) < 1 {
-		return "eu-west-1"
+		return c.region
 	}
 	return match[1]
 }
