@@ -1,7 +1,6 @@
 package asm
 
 import (
-	"fmt"
 	"os"
 	"regexp"
 	"strings"
@@ -13,6 +12,7 @@ import (
 )
 
 const SMPatern = "arn:aws:secretsmanager:"
+const defaultRegion = "eu-west-1"
 
 // Client is a SM custom client
 type Client struct {
@@ -21,16 +21,16 @@ type Client struct {
 }
 
 // NewClient returns a new Client from an AWS SM client
-func NewClient(api secretsmanageriface.SecretsManagerAPI) (*Client, error) {
+func NewClient(api secretsmanageriface.SecretsManagerAPI) *Client {
 	var region string
 
 	if region = os.Getenv("AWS_REGION"); region == "" {
-		return nil, fmt.Errorf("Please set AWS_REGION env variable")
+		region = defaultRegion
 	}
 	return &Client{
 		api,
 		region,
-	}, nil
+	}
 }
 
 // NewAPI returns a new concrete AWS SM client

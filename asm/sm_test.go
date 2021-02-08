@@ -25,14 +25,14 @@ var _ = Describe("SM", func() {
 		})
 		Context("When the client fails", func() {
 			It("should return an error", func() {
-				client, _ := asm.NewClient(&asm.MockClient{GetSecretShouldFail: true})
+				client := asm.NewClient(&asm.MockClient{GetSecretShouldFail: true})
 				_, err := client.GetSecret("arn:aws:secretsmanager:eu-west-1:123456789123:secret/key1")
 				Expect(err).To(HaveOccurred())
 			})
 		})
 		Context("When the keys contains an index", func() {
 			It("it should return the secret", func() {
-				client, _ := asm.NewClient(&asm.MockClient{})
+				client := asm.NewClient(&asm.MockClient{})
 				secret, err := client.GetSecret("arn:aws:secretsmanager:eu-west-1:123456789123:secret/key1#index")
 				Expect(err).ToNot(HaveOccurred())
 				Expect(secret).To(Equal(asm.MockSecretValue))
@@ -40,7 +40,7 @@ var _ = Describe("SM", func() {
 		})
 		Context("When the call succeeds", func() {
 			It("it should return the secret", func() {
-				client, _ := asm.NewClient(&asm.MockClient{})
+				client := asm.NewClient(&asm.MockClient{})
 				secret, err := client.GetSecret("arn:aws:secretsmanager:eu-west-1:123456789123:secret/key1")
 				Expect(err).ToNot(HaveOccurred())
 				Expect(secret).To(Equal(asm.MockSecretValue))
