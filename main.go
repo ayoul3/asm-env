@@ -11,7 +11,7 @@ import (
 
 func init() {
 	if len(os.Args) < 2 {
-		log.Info("No arguments provided. Will gracefully exit")
+		log.Warn("No arguments provided. Will gracefully exit")
 		os.Exit(0)
 	}
 	if os.Getenv("DEBUG_ASM_ENV") == "true" {
