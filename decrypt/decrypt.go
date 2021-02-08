@@ -18,6 +18,7 @@ func (h *Handler) InjectDecryptedVars() (err error) {
 		if decryptedValue, err = h.AsmClient.GetSecret(value); err != nil {
 			return errors.Wrapf(err, "GetSecret %s ", value)
 		}
+		log.Debugf("Setting secret value in env var %s", key)
 		os.Setenv(key, decryptedValue)
 	}
 	return nil

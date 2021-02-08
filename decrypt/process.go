@@ -6,6 +6,7 @@ import (
 	"syscall"
 
 	"emperror.dev/errors"
+	log "github.com/sirupsen/logrus"
 )
 
 func (h *Handler) StartProcess() (err error) {
@@ -25,8 +26,11 @@ func (h *Handler) StartProcess() (err error) {
 	if err != nil {
 		return errors.Wrapf(err, "LookPath %s", h.Args[0])
 	}
+	log.Debugf("Found absolute path %s", binary)
 	if process, err = os.StartProcess(binary, h.Args, &attr); err != nil {
 		return errors.Wrapf(err, "StartProcess")
 	}
+
+	log.Debugf("Releasing process %d", process.Pid)
 	return process.Release()
 }

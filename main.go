@@ -9,24 +9,32 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func main() {
+func init() {
 	if len(os.Args) < 2 {
 		log.Info("No arguments provided. Will gracefully exit")
 		os.Exit(0)
 	}
+	if os.Getenv("DEBUG_ASM_ENV") == "true" {
+		log.SetLevel(log.DebugLevel)
+	}
+}
+func main() {
+	var err error
 
 	d := decrypt.Handler{
 		AsmClient: asm.NewClient(asm.NewAPI()),
 		Args:      os.Args[1:],
 		Envs:      prepareEnvVars(),
 	}
-	err := d.Start()
-	if err != nil {
+
+	if err = d.Start(); err != nil {
 		log.Fatal(err)
 	}
 }
 
 func prepareEnvVars() map[string]string {
+	log.Debug("Preparing env variables")
+
 	envs := make(map[string]string, len(os.Environ()))
 	for _, env := range os.Environ() {
 		pair := strings.SplitN(env, "=", 2)
