@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-  <testsuite name="AWS/SM" tests="3" failures="0" errors="0" time="0">
-      <testcase name="SM GetSecret When the client fails should return an error" classname="AWS/SM" time="0.0001615"></testcase>
-      <testcase name="SM GetSecret When the keys contains an index it should return the secret" classname="AWS/SM" time="6.04e-05"></testcase>
-      <testcase name="SM GetSecret When the call succeeds it should return the secret" classname="AWS/SM" time="0.0001282"></testcase>
-  </testsuite>

@@ -1,0 +1,8 @@
+*
+!.gitignore
+!*.go
+!asm
+!decrypt
+!go.mod
+!go.sum
+!Makefile
