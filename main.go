@@ -20,9 +20,13 @@ func init() {
 }
 func main() {
 	var err error
+	var asmClient *asm.Client
 
+	if asmClient, err = asm.NewClient(asm.NewAPI()); err != nil {
+		log.Fatal(err)
+	}
 	d := decrypt.Handler{
-		AsmClient: asm.NewClient(asm.NewAPI()),
+		AsmClient: asmClient,
 		Args:      os.Args[1:],
 		Envs:      prepareEnvVars(),
 	}

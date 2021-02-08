@@ -1,6 +1,7 @@
 package asm
 
 import (
+	"fmt"
 	"os"
 	"regexp"
 	"strings"
@@ -20,12 +21,16 @@ type Client struct {
 }
 
 // NewClient returns a new Client from an AWS SM client
-func NewClient(api secretsmanageriface.SecretsManagerAPI) *Client {
-	region := os.Getenv("AWS_REGION")
+func NewClient(api secretsmanageriface.SecretsManagerAPI) (*Client, error) {
+	var region string
+
+	if region = os.Getenv("AWS_REGION"); region == "" {
+		return nil, fmt.Errorf("Please set AWS_REGION env variable")
+	}
 	return &Client{
 		api,
 		region,
-	}
+	}, nil
 }
 
 // NewAPI returns a new concrete AWS SM client
