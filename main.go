@@ -14,21 +14,8 @@ func init() {
 		log.Warn("No arguments provided. Will gracefully exit")
 		os.Exit(0)
 	}
-	if os.Getenv("DEBUG_ASM_ENV") == "true" {
+	if os.Getenv("ASM_DEBUG") == "true" {
 		log.SetLevel(log.DebugLevel)
-	}
-}
-func main() {
-	var err error
-
-	d := decrypt.Handler{
-		AsmClient: asm.NewClient(asm.NewAPI()),
-		Args:      os.Args[1:],
-		Envs:      prepareEnvVars(),
-	}
-
-	if err = d.Start(); err != nil {
-		log.Fatal(err)
 	}
 }
 
@@ -41,4 +28,18 @@ func prepareEnvVars() map[string]string {
 		envs[pair[0]] = pair[1]
 	}
 	return envs
+}
+
+func main() {
+	var err error
+
+	d := decrypt.Handler{
+		AsmClient: asm.NewClient(asm.NewAPI()),
+		Args:      os.Args[1:],
+		Envs:      prepareEnvVars(),
+	}
+
+	if err = d.Start(); err != nil {
+		log.Fatal(err)
+	}
 }

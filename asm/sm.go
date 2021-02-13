@@ -12,7 +12,7 @@ import (
 )
 
 const SMPatern = "arn:aws:secretsmanager:"
-const defaultRegion = "eu-west-1"
+const DefaultRegion = "eu-west-1"
 
 // Client is a SM custom client
 type Client struct {
@@ -25,8 +25,9 @@ func NewClient(api secretsmanageriface.SecretsManagerAPI) *Client {
 	var region string
 
 	if region = os.Getenv("AWS_REGION"); region == "" {
-		region = defaultRegion
+		region = DefaultRegion
 	}
+
 	return &Client{
 		api,
 		region,
@@ -35,7 +36,11 @@ func NewClient(api secretsmanageriface.SecretsManagerAPI) *Client {
 
 // NewAPI returns a new concrete AWS SM client
 func NewAPI() *secretsmanager.SecretsManager {
-	return secretsmanager.New(NewSession())
+	var region string
+	if region = os.Getenv("AWS_REGION"); region == "" {
+		region = DefaultRegion
+	}
+	return secretsmanager.New(NewFromRegion(region))
 }
 
 // NewAPIForRegion returns a new concrete AWS SM client for a specific region
@@ -54,7 +59,7 @@ func (c *Client) GetSecret(key string) (secret string, err error) {
 	}
 	res, err := api.GetSecretValue(new(secretsmanager.GetSecretValueInput).SetSecretId(secretName))
 	if err != nil {
-		return "", errors.Wrapf(err, "GetSecretValue ")
+		return "", errors.Wrapf(err, "GetSecretValue - Region %s ", secretRegion)
 	}
 	return *res.SecretString, nil
 }
