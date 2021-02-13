@@ -2,7 +2,7 @@ FROM alpine
 
 WORKDIR /app
 
-RUN apk add -U --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates && update-ca-certificates
 
 COPY asm-env /app
 
