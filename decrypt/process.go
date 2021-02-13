@@ -1,7 +1,7 @@
 package decrypt
 
 import (
-	"os"
+	"fmt"
 	"os/exec"
 	"syscall"
 
@@ -10,27 +10,14 @@ import (
 )
 
 func (h *Handler) StartProcess() (err error) {
-	var process *os.Process
-
-	attr := os.ProcAttr{
-		Dir: ".",
-		Env: os.Environ(),
-		Files: []*os.File{
-			os.Stdin,
-			os.Stdout,
-			os.Stderr,
-		},
-		Sys: &syscall.SysProcAttr{Noctty: true},
-	}
+	envv := make([]string, 0)
 	binary, err := exec.LookPath(h.Args[0])
 	if err != nil {
 		return errors.Wrapf(err, "LookPath %s", h.Args[0])
 	}
-	log.Debugf("Found absolute path %s", binary)
-	if process, err = os.StartProcess(binary, h.Args, &attr); err != nil {
-		return errors.Wrapf(err, "StartProcess")
+	for key, val := range h.Envs {
+		envv = append(envv, fmt.Sprintf("%s=%s", key, val))
 	}
-
-	log.Debugf("Releasing process %d", process.Pid)
-	return process.Release()
+	log.Debugf("Found absolute path %s", binary)
+	return syscall.Exec(binary, h.Args, envv)
 }

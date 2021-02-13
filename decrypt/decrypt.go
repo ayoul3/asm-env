@@ -27,6 +27,7 @@ func (h *Handler) InjectDecryptedVars() (err error) {
 			return errors.Wrapf(err, "ExtractKeyWhenJson %s ", key)
 		}
 		os.Setenv(key, nestedValue)
+		h.Envs[key] = nestedValue
 	}
 	return nil
 }
