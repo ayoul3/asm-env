@@ -5,3 +5,6 @@ This project is part of [asm-webhook](https://github.com/ayoul3/asm-webhook). It
 
 ## Credit
 Inspired by [Banzai Vaults](https://github.com/banzaicloud/bank-vaults/tree/master/charts/vault-secrets-webhook)
+
+## Author
+Ayoub Elaassal
