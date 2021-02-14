@@ -1,9 +1,12 @@
 *
 !.gitignore
 !*.go
+!*.yaml
 !asm
 !decrypt
 !go.mod
 !go.sum
 !Makefile
 !Dockerfile
+!.github
+!.github/workflows
